@@ -265,7 +265,7 @@ class MusicPlayerSessionImpl constructor(private val context: Context) : MusicPl
         override fun onLoadingChanged(isLoading: Boolean) {
         }
 
-        override fun onPlayerError(error: ExoPlaybackException) {
+        override fun onPlayerError(error: PlaybackException) {
             invalidatePlaybackState()
         }
 

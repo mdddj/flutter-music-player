@@ -88,7 +88,7 @@ class MusicPlayerServicePlugin(
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "updateConfig" -> {
-                config = Config(call.arguments())
+                config = Config(call.arguments()!!)
                 result.success(null)
             }
             "insertToPlayQueue" -> {

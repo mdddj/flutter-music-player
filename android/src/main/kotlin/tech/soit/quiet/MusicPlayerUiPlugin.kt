@@ -8,6 +8,7 @@ import android.os.IBinder
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -72,16 +73,16 @@ private class MusicPlayerUiChannel(
                 "prepareFromMediaId" -> session.prepareFromMediaId(call.arguments())
                 "skipToNext" -> session.skipToNext()
                 "skipToPrevious" -> session.skipToPrevious()
-                "seekTo" -> session.seekTo(call.arguments<Number>().toLong())
-                "setPlayMode" -> session.playMode = call.arguments()
-                "setPlayQueue" -> session.playQueue = PlayQueue(call.arguments<Map<String, Any>>())
-                "getNext" -> session.getNext(MusicMetadata.fromMap(call.arguments()))?.obj
-                "getPrevious" -> session.getPrevious(MusicMetadata.fromMap(call.arguments()))?.obj
+                "seekTo" -> call.arguments<Number>()?.toLong()?.let { session.seekTo(it) }
+                "setPlayMode" -> session.playMode = call.arguments()!!
+                "setPlayQueue" -> session.playQueue = call.arguments<Map<String, Any>>()?.let { PlayQueue(it) }
+                "getNext" -> session.getNext(MusicMetadata.fromMap(call.arguments()!!))?.obj
+                "getPrevious" -> session.getPrevious(MusicMetadata.fromMap(call.arguments()!!))?.obj
                 "insertToNext" -> session.addMetadata(
-                    MusicMetadata.fromMap(call.arguments()),
+                    MusicMetadata.fromMap(call.arguments()!!),
                     session.current?.mediaId
                 )
-                "setPlaybackSpeed" -> session.setPlaybackSpeed(call.arguments<Double>())
+                "setPlaybackSpeed" -> call.arguments<Double>()?.let { session.setPlaybackSpeed(it) }
                 else -> null
             }
 
@@ -131,6 +132,7 @@ private class RemotePlayer : ServiceConnection {
         pendingExecution.clear()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun doWhenSessionReady(call: suspend (MusicPlayerSession) -> Unit) {
         val session = playerSession
         if (session == null) {
