@@ -10,7 +10,7 @@ import kotlin.coroutines.suspendCoroutine
 
 suspend fun MethodChannel.invokeAsync(method: String, arguments: Any?): Any? =
     withContext(Dispatchers.Main) {
-        suspendCoroutine<Any?> { continuation ->
+        suspendCoroutine { continuation ->
             invokeMethod(method, arguments, object : MethodChannel.Result {
 
                 override fun notImplemented() {
